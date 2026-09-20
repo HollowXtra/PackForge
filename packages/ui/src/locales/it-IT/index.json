@@ -5262,7 +5262,7 @@
     "defaultMessage": "Nuovo server"
   },
   "servers.list-empty.no-servers-description": {
-    "defaultMessage": "Crea un server, con o senza mod, e invita chi vuoi tramite la Modrinth App."
+    "defaultMessage": "Crea un server, con o senza mod, e invita chi vuoi tramite PackForge."
   },
   "servers.list-empty.one-click-mod-installs-description": {
     "defaultMessage": "Scegli le tue mod preferite, al resto ci pensiamo noi."
@@ -5271,7 +5271,7 @@
     "defaultMessage": "Installa mod con un clic"
   },
   "servers.list-empty.play-with-friends-description": {
-    "defaultMessage": "Invita i tuoi amici a giocare con un semplice clic tramite la Modrinth App."
+    "defaultMessage": "Invita i tuoi amici a giocare con un semplice clic tramite PackForge."
   },
   "servers.list-empty.play-with-friends-title": {
     "defaultMessage": "Gioca con chiunque"

@@ -1,6 +1,26 @@
 <template>
 	<ReadyTransition :pending="loading">
 		<ContentPageLayout :highlighted-item-id="highlightedItemId">
+			<template #toolbarActions>
+				<Button
+					v-if="mergedProjects.length > 0"
+					v-tooltip="formatMessage(messages.healthCheckTooltip)"
+					type="quiet"
+					:color="healthProblemCount > 0 ? 'orange' : undefined"
+					:disabled="contentHealthChecking"
+					class="!text-sm !font-medium"
+					@click="openContentHealth"
+				>
+					<WrenchIcon />
+					{{ formatMessage(messages.healthCheckButton) }}
+					<span
+						v-if="healthProblemCount > 0"
+						class="ml-1 rounded-full bg-surface-4 px-1.5 py-0.5 text-xs font-semibold text-contrast"
+					>
+						{{ healthProblemCount }}
+					</span>
+				</Button>
+			</template>
 			<template #modals>
 				<SyncedContentModal ref="syncedContentModal" />
 				<UnknownFileWarningModal
@@ -55,6 +75,19 @@
 					ref="exportModal"
 					:instance="instance"
 				/>
+				<ContentHealthModal
+					ref="contentHealthModal"
+					:report="contentHealthReport"
+					:checking="contentHealthChecking"
+					:fixable-ids="healthFixableIds"
+					:unfixable-tooltip="healthUnfixableTooltip"
+					:can-install="!isQuarantined"
+					@check="runContentHealthCheck"
+					@install="installHealthDependency"
+					@enable="enableHealthDependency"
+					@remove="removeHealthConflict"
+					@disable="disableHealthConflict"
+				/>
 				<ContentUpdaterModal
 					v-if="updatingProject || updatingModpack"
 					ref="contentUpdaterModal"
@@ -90,9 +123,16 @@
 
 <script setup lang="ts">
 import type { Labrinth } from '@modrinth/api-client'
-import { ClipboardCopyIcon, FolderOpenIcon, LockIcon, LockOpenIcon } from '@modrinth/assets'
+import {
+	ClipboardCopyIcon,
+	FolderOpenIcon,
+	LockIcon,
+	LockOpenIcon,
+	WrenchIcon,
+} from '@modrinth/assets'
 import {
 	type BulkOperationStatus,
+	Button,
 	type ButtonMenuOption,
 	commonMessages,
 	ConfirmDisableModal,
@@ -125,8 +165,14 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import ExportModal from '@/components/ui/ExportModal.vue'
+import ContentHealthModal from '@/components/ui/instance/ContentHealthModal.vue'
 import SyncedContentModal from '@/components/ui/instance/SyncedContentModal.vue'
 import ShareModalWrapper from '@/components/ui/modal/ShareModalWrapper.vue'
+import {
+	type ContentHealthEntryRef,
+	type ContentHealthReport,
+	useContentHealth,
+} from '@/composables/instances/use-content-health'
 import { useManagedContentPolicy } from '@/composables/instances/use-managed-content-policy'
 import { useSyncedPackActions } from '@/composables/instances/use-synced-pack-actions'
 import { useAppEvent } from '@/composables/use-app-event'
@@ -198,6 +244,26 @@ const messages = defineMessages({
 		id: 'app.instance.mods.freeze-content',
 		defaultMessage: 'Freeze version',
 	},
+	healthCheckButton: {
+		id: 'app.instance.mods.health-check-button',
+		defaultMessage: 'Health check',
+	},
+	healthCheckTooltip: {
+		id: 'app.instance.mods.health-check-tooltip',
+		defaultMessage: 'Check for missing dependencies and conflicting content in this instance',
+	},
+	healthQuarantined: {
+		id: 'app.instance.mods.health-check.quarantined',
+		defaultMessage: 'This instance is quarantined, so its content cannot be changed.',
+	},
+	healthManagedContent: {
+		id: 'app.instance.mods.health-check.managed-content',
+		defaultMessage: 'This content comes from the shared instance, so it cannot be changed here.',
+	},
+	healthUnchangeableContent: {
+		id: 'app.instance.mods.health-check.unchangeable-content',
+		defaultMessage: 'This file cannot be changed from the app.',
+	},
 	unfreezeContent: {
 		id: 'app.instance.mods.unfreeze-content',
 		defaultMessage: 'Unfreeze version',
@@ -232,8 +298,12 @@ function contentOwnerLink(owner: ContentOwner): NonNullable<ContentOwner['link']
 const { formatMessage } = useVIntl()
 const { handleError, addNotification } = injectNotificationManager()
 const appEvents = injectAppEvents()
-const { installingItems, installRevisionByInstance, installFailureRevisionByInstance } =
-	injectContentInstall()
+const {
+	installingItems,
+	installRevisionByInstance,
+	installFailureRevisionByInstance,
+	install: installContent,
+} = injectContentInstall()
 const router = useRouter()
 const route = useRoute()
 const queryClient = useQueryClient()
@@ -913,6 +983,107 @@ async function removeMod(mod: ContentItem) {
 		handleError(err as Error)
 	} finally {
 		finishContentOperation(mod, operation)
+	}
+}
+
+const contentHealth = useContentHealth()
+const { report: contentHealthReport, checking: contentHealthChecking } = contentHealth
+const contentHealthModal = ref<InstanceType<typeof ContentHealthModal> | null>(null)
+
+const healthProblemCount = computed(() =>
+	contentHealthReport.value
+		? contentHealthReport.value.missingDependencies.length +
+			contentHealthReport.value.conflicts.length
+		: 0,
+)
+
+/** Only content this instance is allowed to change can be fixed from the health check */
+const healthFixableIds = computed(
+	() =>
+		new Set(
+			projects.value
+				.filter((item) => canMutateContent(item) && !!item.file_path)
+				.map((item) => item.id),
+		),
+)
+
+const healthUnfixableTooltip = computed(() => {
+	if (isQuarantined.value) return formatMessage(messages.healthQuarantined)
+	if (isSharedMember.value) return formatMessage(messages.healthManagedContent)
+	return formatMessage(messages.healthUnchangeableContent)
+})
+
+async function runContentHealthCheck() {
+	try {
+		await contentHealth.check(mergedProjects.value)
+	} catch (err) {
+		handleError(err as Error)
+	}
+}
+
+function openContentHealth() {
+	contentHealthModal.value?.show()
+	void runContentHealthCheck()
+}
+
+async function installHealthDependency(
+	dependency: ContentHealthReport['missingDependencies'][number],
+) {
+	if (!dependency.projectId || isQuarantined.value) return
+
+	try {
+		await installContent(
+			dependency.projectId,
+			dependency.versionId,
+			instance.value.id,
+			'ContentHealthCheck',
+		)
+		await refreshContentState('must_revalidate')
+	} catch (err) {
+		handleError(err as Error)
+	} finally {
+		await runContentHealthCheck()
+	}
+}
+
+function findHealthItem(entry: ContentHealthEntryRef) {
+	return projects.value.find((item) => item.id === entry.id)
+}
+
+async function enableHealthDependency(
+	dependency: ContentHealthReport['missingDependencies'][number],
+) {
+	if (isQuarantined.value) return
+
+	try {
+		for (const disabled of dependency.disabled) {
+			const item = findHealthItem(disabled)
+			if (item && canToggleContent(item)) await toggleDisableMod(item, true)
+		}
+	} finally {
+		await runContentHealthCheck()
+	}
+}
+
+async function removeHealthConflict(entry: ContentHealthEntryRef) {
+	const item = findHealthItem(entry)
+	if (!item) return
+
+	try {
+		await removeMod(item)
+	} finally {
+		await runContentHealthCheck()
+	}
+}
+
+async function disableHealthConflict(entry: ContentHealthEntryRef) {
+	const item = findHealthItem(entry)
+	if (!item) return
+
+	try {
+		await toggleDisableMod(item, false)
+	} finally {
+		await runContentHealthCheck()
 	}
 }
 

@@ -1,5 +1,7 @@
 # Copying
 
+PackForge is a fork of the Modrinth App. The licensing and branding notices below are retained from the upstream project.
+
 The source code of Modrinth App is licensed under the GNU General Public License, Version 3 only, which is provided in the file [LICENSE](./LICENSE). However, some files listed below are licensed under a different license.
 
 ## Modrinth logo

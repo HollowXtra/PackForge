@@ -165,7 +165,7 @@
     "message": "Hide nametag"
   },
   "app.appearance-settings.minimize-launcher.description": {
-    "message": "Minimize Modrinth App when Minecraft starts."
+    "message": "Minimize PackForge when Minecraft starts."
   },
   "app.appearance-settings.minimize-launcher.title": {
     "message": "Minimize app"
@@ -277,6 +277,72 @@
   },
   "app.browse.server.installing": {
     "message": "Installing"
+  },
+  "app.content-health.all-clear-body": {
+    "message": "Everything installed has the dependencies it asks for, and nothing installed conflicts with anything else."
+  },
+  "app.content-health.all-clear-header": {
+    "message": "No problems found"
+  },
+  "app.content-health.check-again-button": {
+    "message": "Check again"
+  },
+  "app.content-health.checked-summary": {
+    "message": "Checked {count, plural, one {# project} other {# projects}}. {unchecked, plural, =0 {Nothing else needed checking.} one {# file has no Modrinth metadata and could not be checked.} other {# files have no Modrinth metadata and could not be checked.}}"
+  },
+  "app.content-health.checking": {
+    "message": "Checking installed content..."
+  },
+  "app.content-health.conflict-declared-by": {
+    "message": "Marked as incompatible by {project}"
+  },
+  "app.content-health.conflicts-label": {
+    "message": "Conflicting content"
+  },
+  "app.content-health.disable-button": {
+    "message": "Disable"
+  },
+  "app.content-health.disabled-badge": {
+    "message": "Installed but disabled"
+  },
+  "app.content-health.enable-button": {
+    "message": "Enable"
+  },
+  "app.content-health.header": {
+    "message": "Content health check"
+  },
+  "app.content-health.install-button": {
+    "message": "Install"
+  },
+  "app.content-health.missing-label": {
+    "message": "Missing required dependencies"
+  },
+  "app.content-health.not-checked-yet": {
+    "message": "This instance has not been checked yet. Run a check to look for missing dependencies and conflicting content."
+  },
+  "app.content-health.not-on-modrinth": {
+    "message": "This dependency is not published on Modrinth, so it has to be installed manually."
+  },
+  "app.content-health.problems-body": {
+    "message": "Content that is missing a dependency or that conflicts with other content can crash the game or silently fail to load. You can fix these from here."
+  },
+  "app.content-health.problems-header": {
+    "message": "Problems found"
+  },
+  "app.content-health.remove-button": {
+    "message": "Remove"
+  },
+  "app.content-health.required-by": {
+    "message": "Required by {count, plural, one {# project} other {# projects}}"
+  },
+  "app.content-health.required-by-list": {
+    "message": "Needed by {projects}"
+  },
+  "app.content-health.unfixable-tooltip": {
+    "message": "This content is managed elsewhere and cannot be changed from here."
+  },
+  "app.content-health.unknown-label": {
+    "message": "Unknown project"
   },
   "app.content-install.no-compatible-versions": {
     "message": "No available versions match {compatibilityLabel}. Select a version to install anyway. Dependencies will not be installed automatically."
@@ -486,7 +552,7 @@
     "message": "View instance"
   },
   "app.hosting.update-required.description": {
-    "message": "You need to update to use Modrinth Hosting through the Modrinth App"
+    "message": "You need to update to use Modrinth Hosting through PackForge"
   },
   "app.hosting.update-required.download": {
     "message": "Download to update"
@@ -495,7 +561,7 @@
     "message": "Excited Modrinth Bot"
   },
   "app.hosting.update-required.title": {
-    "message": "Modrinth App update required"
+    "message": "PackForge update required"
   },
   "app.install.phase.downloading_content": {
     "message": "Downloading content"
@@ -703,6 +769,21 @@
   },
   "app.instance.mods.freeze-content": {
     "message": "Freeze version"
+  },
+  "app.instance.mods.health-check-button": {
+    "message": "Health check"
+  },
+  "app.instance.mods.health-check-tooltip": {
+    "message": "Check for missing dependencies and conflicting content in this instance"
+  },
+  "app.instance.mods.health-check.managed-content": {
+    "message": "This content comes from the shared instance, so it cannot be changed here."
+  },
+  "app.instance.mods.health-check.quarantined": {
+    "message": "This instance is quarantined, so its content cannot be changed."
+  },
+  "app.instance.mods.health-check.unchangeable-content": {
+    "message": "This file cannot be changed from the app."
   },
   "app.instance.mods.locked-content": {
     "message": "Content in locked instances cannot be changed."
@@ -1349,6 +1430,15 @@
   "app.modal.update-to-play.update-required-description": {
     "message": "An update is required to play {name}. Please update to latest version to launch the game."
   },
+  "app.modrinth-app-import.description": {
+    "message": "PackForge imported {instances} instances, {accounts} accounts and all of your settings from your existing Modrinth App installation."
+  },
+  "app.modrinth-app-import.description.shared-directory": {
+    "message": "PackForge imported {instances} instances, {accounts} accounts and all of your settings from your existing Modrinth App installation. Your instance files keep using {directory}, so nothing had to be re-downloaded."
+  },
+  "app.modrinth-app-import.title": {
+    "message": "Imported from Modrinth App"
+  },
   "app.nav.add-account": {
     "message": "Add account"
   },
@@ -1626,7 +1716,7 @@
     "message": "Oldest"
   },
   "app.settings.app-version": {
-    "message": "Modrinth App {version}"
+    "message": "PackForge {version}"
   },
   "app.settings.default-instance-options.environment-variables.description": {
     "message": "Environment variables set when launching an instance."
@@ -2739,7 +2829,7 @@
     "message": "Ads make Modrinth possible and fund creator payouts. Our partners may store or access cookies in the app to personalize ads and measure performance. You can opt out or manage your preferences below."
   },
   "app.settings.privacy.discord-rich-presence.description": {
-    "message": "Show Modrinth App as your current activity on Discord. This does not affect Rich Presence added to instances by mods. Requires an app restart."
+    "message": "Show PackForge as your current activity on Discord. This does not affect Rich Presence added to instances by mods. Requires an app restart."
   },
   "app.settings.privacy.discord-rich-presence.title": {
     "message": "Discord Rich Presence"
@@ -2784,7 +2874,7 @@
     "message": "Browse for an app directory"
   },
   "app.settings.resource-management.app-directory.description": {
-    "message": "Where Modrinth App stores instances and other files. Changes take effect after restarting the app."
+    "message": "Where PackForge stores instances and other files. Changes take effect after restarting the app."
   },
   "app.settings.resource-management.app-directory.select": {
     "message": "Select a new app directory"
@@ -3291,7 +3381,7 @@
     "message": "Toggle on"
   },
   "app.survey.body": {
-    "message": "Would you mind answering a few questions about your experience with Modrinth App?"
+    "message": "Would you mind answering a few questions about your experience with PackForge?"
   },
   "app.survey.footer": {
     "message": "This feedback will go directly to the Modrinth team and help guide future updates!"
@@ -3435,13 +3525,13 @@
     "message": "Synced resource packs"
   },
   "app.update-popup.body.download-complete": {
-    "message": "Modrinth App v{version} has finished downloading. Reload to update now, or automatically when you close Modrinth App."
+    "message": "PackForge v{version} has finished downloading. Reload to update now, or automatically when you close PackForge."
   },
   "app.update-popup.body.linux": {
-    "message": "Modrinth App v{version} is available. Use your package manager to update for the latest features and fixes!"
+    "message": "PackForge v{version} is available. Use your package manager to update for the latest features and fixes!"
   },
   "app.update-popup.body.metered": {
-    "message": "Modrinth App v{version} is available now! Since you're on a metered network, we didn't automatically download it."
+    "message": "PackForge v{version} is available now! Since you're on a metered network, we didn't automatically download it."
   },
   "app.update-popup.changelog": {
     "message": "Changelog"
@@ -3486,7 +3576,7 @@
     "message": "Press <shortcut>N</shortcut> to quick create an instance"
   },
   "app.welcome-screen.title": {
-    "message": "Welcome to Modrinth"
+    "message": "Welcome to PackForge"
   },
   "app.world.server-modal.placeholder-address": {
     "message": "example.modrinth.gg"
@@ -3639,7 +3729,7 @@
     "message": "Unlink shared instance"
   },
   "installation-settings.unpublish-shared-instance.modal.admonition-body": {
-    "message": "This deletes the shared instance from Modrinth's servers. People using it in the Modrinth App will stop receiving updates, but your local instance and its content will stay on this device."
+    "message": "This deletes the shared instance from Modrinth's servers. People using it in PackForge will stop receiving updates, but your local instance and its content will stay on this device."
   },
   "installation-settings.unpublish-shared-instance.modal.admonition-header": {
     "message": "Unpublishing shared instance"

@@ -40,7 +40,7 @@ impl ContentStore {
             .await?;
         if !file.try_lock_exclusive()? {
             return Err(input(
-                "Another Modrinth process is using this application directory",
+                "Another PackForge or Modrinth App process is using this application directory",
             ));
         }
         Ok(file)

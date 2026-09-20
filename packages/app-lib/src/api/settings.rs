@@ -3,7 +3,7 @@
 pub use crate::state::content_store::{StoreUsage, StoreVerification};
 pub use crate::{
     State,
-    state::{Hooks, MemorySettings, Settings, WindowSize},
+    state::{Hooks, MemorySettings, ModrinthAppImport, Settings, WindowSize},
 };
 
 pub async fn store_usage() -> crate::Result<StoreUsage> {
@@ -120,6 +120,18 @@ pub async fn set(settings: Settings) -> crate::Result<()> {
 }
 
 #[tracing::instrument]
+/// The import of an existing Modrinth App installation, if one happened.
+pub async fn modrinth_app_import() -> crate::Result<Option<ModrinthAppImport>> {
+    let state = State::get().await?;
+    crate::state::app_import::get(&state.pool).await
+}
+
+/// Marks the import of a Modrinth App installation as reported to the user.
+pub async fn acknowledge_modrinth_app_import() -> crate::Result<()> {
+    let state = State::get().await?;
+    crate::state::app_import::acknowledge(&state.pool).await
+}
+
 pub async fn cancel_directory_change(
     app_identifier: &str,
 ) -> crate::Result<()> {

@@ -100,6 +100,10 @@ jobs:
       contents: write
 
     steps:
+      # `gh release` needs a git repository in the workspace
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: Download app bundles
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
@@ -121,7 +125,17 @@ jobs:
           printf 'Releasing %s with artifacts:\n' "$tag"
           printf '  %s\n' "${files[@]}"
 
-          gh release create "$tag" \
-            --title "Modrinth App ${tag#v}" \
-            --generate-notes \
-            "${files[@]}"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            # Publish the assets of a release that was created without them
+            gh release upload "$tag" \
+              --repo "$GITHUB_REPOSITORY" \
+              --clobber \
+              "${files[@]}"
+          else
+            gh release create "$tag" \
+              --repo "$GITHUB_REPOSITORY" \
+              --verify-tag \
+              --title "PackForge ${tag#v}" \
+              --generate-notes \
+              "${files[@]}"
+          fi

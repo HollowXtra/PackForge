@@ -5910,7 +5910,7 @@
     "defaultMessage": "Zoekresultaten"
   },
   "settings.language.coverage.app-tooltip": {
-    "defaultMessage": "Ongeveer {percentage}% van de Modrinth App is beschikbaar in deze taal."
+    "defaultMessage": "Ongeveer {percentage}% van PackForge is beschikbaar in deze taal."
   },
   "settings.language.coverage.label": {
     "defaultMessage": "{percentage}% ondersteund"

@@ -6,6 +6,10 @@ use sqlx::{Pool, Sqlite};
 use std::path::Path;
 use std::time::Duration;
 
+/// Migrations of the app database, also used to check that an imported
+/// database was written by a version of the app this build knows about.
+pub(crate) static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!();
+
 pub(crate) async fn connect(
     app_identifier: &str,
 ) -> crate::Result<Pool<Sqlite>> {
@@ -35,7 +39,7 @@ async fn open_migrated_app_db(db_path: &Path) -> crate::Result<Pool<Sqlite>> {
         );
     }
 
-    sqlx::migrate!().run(&pool).await?;
+    MIGRATOR.run(&pool).await?;
     record_current_app_version(&pool).await?;
 
     if let Err(err) = stale_data_cleanup(&pool).await {

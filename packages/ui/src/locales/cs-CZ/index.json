@@ -4374,7 +4374,7 @@
     "defaultMessage": "Nový server"
   },
   "servers.list-empty.no-servers-description": {
-    "defaultMessage": "Instalujte mody, zvěte přátele a hrajte společně, to vše z Modrinth App."
+    "defaultMessage": "Instalujte mody, zvěte přátele a hrajte společně, to vše z PackForge."
   },
   "servers.list-empty.one-click-mod-installs-description": {
     "defaultMessage": "Vyberte si své oblíbené mody a o zbytek se postaráme."
@@ -5196,4 +5196,3 @@
     "defaultMessage": "Typ"
   }
 }
-

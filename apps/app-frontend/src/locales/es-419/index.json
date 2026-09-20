@@ -3231,13 +3231,13 @@
     "message": "Paquetes de recursos sincronizados"
   },
   "app.update-popup.body.download-complete": {
-    "message": "La descarga de la Modrinth App v{version} ha finalizado. Actualiza ahora o automáticamente al cerrar la Modrinth App."
+    "message": "La descarga PackForge v{version} ha finalizado. Actualiza ahora o automáticamente al cerrar PackForge."
   },
   "app.update-popup.body.linux": {
-    "message": "La Modrinth App v{version} está disponible. ¡Usa tu gestor de paquetes para actualizarla y tener las últimas funciones y corrección de errores!"
+    "message": "La PackForge v{version} está disponible. ¡Usa tu gestor de paquetes para actualizarla y tener las últimas funciones y corrección de errores!"
   },
   "app.update-popup.body.metered": {
-    "message": "¡La Modrinth App v{version} ya está disponible! Al estar usando una red de datos límitada, no la hemos descargado automáticamente."
+    "message": "¡La PackForge v{version} ya está disponible! Al estar usando una red de datos límitada, no la hemos descargado automáticamente."
   },
   "app.update-popup.changelog": {
     "message": "Registro de cambios"
@@ -3282,7 +3282,7 @@
     "message": "Presiona <shortcut>N</shortcut> para crear rápidamente una instancia"
   },
   "app.welcome-screen.title": {
-    "message": "Bienvenido a Modrinth"
+    "message": "Bienvenido a PackForge"
   },
   "app.world.server-modal.placeholder-address": {
     "message": "ejemplo.modrinth.gg"

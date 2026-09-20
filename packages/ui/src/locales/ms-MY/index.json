@@ -3879,7 +3879,7 @@
     "defaultMessage": "Pelayan baharu"
   },
   "servers.list-empty.no-servers-description": {
-    "defaultMessage": "Pasang mod, jemput rakan dan main bersama-sama, semuanya dari Modrinth App."
+    "defaultMessage": "Pasang mod, jemput rakan dan main bersama-sama, semuanya dari PackForge."
   },
   "servers.list-empty.one-click-mod-installs-description": {
     "defaultMessage": "Pilih mod kegemaran anda dan kami uruskan selebihnya."
@@ -4953,4 +4953,3 @@
     "defaultMessage": "Jenis"
   }
 }
-

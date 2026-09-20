@@ -28,10 +28,38 @@ export interface LoadingBar {
 
 export type OpeningCommand = Extract<AppEvent, { type: 'command' }>['payload']
 
+export interface ModrinthAppImportInfo {
+	/** Directory the data was imported from */
+	source: string
+	/** Instances found after importing */
+	instances: number
+	/** Minecraft accounts found after importing */
+	minecraft_accounts: number
+	/** Modrinth accounts found after importing */
+	modrinth_accounts: number
+	/** Game directory now shared with Modrinth App, if any */
+	data_dir: string | null
+	/** Unix timestamp of the import */
+	imported_at: number
+	/** Whether the import has been reported to the user yet */
+	acknowledged: boolean
+}
+
 // Initialize the theseus API state
 // This should be called during the initializion/opening of the launcher
 export async function initialize_state(events: Channel<ArrayBuffer>) {
 	return await invoke<void>('initialize_state', { events })
+}
+
+// Get the import of an existing Modrinth App installation, if one happened
+// when the app was started for the first time
+export async function getModrinthAppImport() {
+	return await invoke<ModrinthAppImportInfo | null>('plugin:settings|modrinth_app_import')
+}
+
+// Stop reporting the imported Modrinth App data in the UI
+export async function acknowledgeModrinthAppImport() {
+	return await invoke<void>('plugin:settings|acknowledge_modrinth_app_import')
 }
 
 // Gets active progress bars

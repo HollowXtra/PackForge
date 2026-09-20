@@ -5313,7 +5313,7 @@
     "defaultMessage": "Nowy serwer"
   },
   "servers.list-empty.no-servers-description": {
-    "defaultMessage": "Instaluj modyfikacje, zapraszaj znajomych i graj z nimi przy użyciu Modrinth App."
+    "defaultMessage": "Instaluj modyfikacje, zapraszaj znajomych i graj z nimi przy użyciu PackForge."
   },
   "servers.list-empty.one-click-mod-installs-description": {
     "defaultMessage": "Wybierz swoje ulubione mody, a my zajmiemy się resztą."
@@ -5919,7 +5919,7 @@
     "defaultMessage": "Wyniki wyszukiwania"
   },
   "settings.language.coverage.app-tooltip": {
-    "defaultMessage": "Około {percentage}% Modrinth App jest dostępne w tym języku."
+    "defaultMessage": "Około {percentage}% PackForge jest dostępne w tym języku."
   },
   "settings.language.coverage.label": {
     "defaultMessage": "{percentage}% wspierane"

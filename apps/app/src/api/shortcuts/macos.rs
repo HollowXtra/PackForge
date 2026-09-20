@@ -71,9 +71,7 @@ pub(super) async fn create_shortcut(
 
 fn macos_shortcut_identifier(launch_url: &str) -> String {
     let mut hasher = DefaultHasher::new();
-    launch_url.hash(&mut hasher);
-
-    format!("com.modrinth.instance-shortcut.{:x}", hasher.finish())
+    launch_url.hash(&mut hasher);	format!("com.packforge.instance-shortcut.{:x}", hasher.finish())
 }
 
 fn shell_quote(input: &str) -> String {

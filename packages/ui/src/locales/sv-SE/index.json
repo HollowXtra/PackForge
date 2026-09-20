@@ -5001,7 +5001,7 @@
     "defaultMessage": "Ny server"
   },
   "servers.list-empty.no-servers-description": {
-    "defaultMessage": "Installera moddar, bjud in vänner och spela tillsammans, allt från Modrinth App."
+    "defaultMessage": "Installera moddar, bjud in vänner och spela tillsammans, allt från PackForge."
   },
   "servers.list-empty.one-click-mod-installs-description": {
     "defaultMessage": "Välj dina favorit moddar så hanterar vi resten."
@@ -5499,7 +5499,7 @@
     "defaultMessage": "Sökresultat"
   },
   "settings.language.coverage.app-tooltip": {
-    "defaultMessage": "Runt {percentage} % av Modrinth App finns tillgängligt i det här språket."
+    "defaultMessage": "Runt {percentage} % av PackForge finns tillgängligt i det här språket."
   },
   "settings.language.coverage.label": {
     "defaultMessage": "{percentage} % stött"

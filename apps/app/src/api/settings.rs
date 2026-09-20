@@ -11,6 +11,8 @@ pub fn init<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
             store_cleanup,
             store_set_cache_limit,
             store_verify,
+            modrinth_app_import,
+            acknowledge_modrinth_app_import,
             cancel_directory_change
         ])
         .build()
@@ -67,6 +69,22 @@ pub async fn settings_get() -> Result<Settings> {
 #[tauri::command]
 pub async fn settings_set(settings: Settings) -> Result<()> {
     settings::set(settings).await?;
+    Ok(())
+}
+
+// Get the Modrinth App import that happened when the app was first started
+// invoke('plugin:settings|modrinth_app_import')
+#[tauri::command]
+pub async fn modrinth_app_import()
+-> Result<Option<settings::ModrinthAppImport>> {
+    Ok(settings::modrinth_app_import().await?)
+}
+
+// Stop reporting the Modrinth App import in the UI
+// invoke('plugin:settings|acknowledge_modrinth_app_import')
+#[tauri::command]
+pub async fn acknowledge_modrinth_app_import() -> Result<()> {
+    settings::acknowledge_modrinth_app_import().await?;
     Ok(())
 }
 

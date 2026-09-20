@@ -54,7 +54,6 @@ import {
 	providePageContext,
 	providePopupNotificationManager,
 	TeleportOverflowMenu,
-	TextLogo,
 	TooltipDirective,
 	useDebugLogger,
 	useFormatBytes,
@@ -75,6 +74,7 @@ import { saveWindowState, StateFlags } from '@tauri-apps/plugin-window-state'
 import { computed, nextTick, onMounted, onUnmounted, provide, ref, watch } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 
+import PackForgeLogo from '@/components/brand/PackForgeLogo.vue'
 import AccountsCard from '@/components/ui/AccountsCard.vue'
 import AppActionBar from '@/components/ui/AppActionBar.vue'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
@@ -150,7 +150,12 @@ import {
 	set as setSettings,
 } from '@/helpers/settings.ts'
 import { debugStartup, traceStartupStep } from '@/helpers/startup-debug'
-import { get_opening_command, initialize_state } from '@/helpers/state'
+import {
+	acknowledgeModrinthAppImport,
+	get_opening_command,
+	getModrinthAppImport,
+	initialize_state,
+} from '@/helpers/state'
 import {
 	gameOptionsSyncSourcesQueryOptions,
 	globalSyncedOptionsQueryOptions,
@@ -710,6 +715,20 @@ const messages = defineMessages({
 		id: 'app.sidebar.playing-as',
 		defaultMessage: 'Playing as',
 	},
+	importedFromModrinthAppTitle: {
+		id: 'app.modrinth-app-import.title',
+		defaultMessage: 'Imported from Modrinth App',
+	},
+	importedFromModrinthAppDescription: {
+		id: 'app.modrinth-app-import.description',
+		defaultMessage:
+			'PackForge imported {instances} instances, {accounts} accounts and all of your settings from your existing Modrinth App installation.',
+	},
+	importedFromModrinthAppSharedDirectory: {
+		id: 'app.modrinth-app-import.description.shared-directory',
+		defaultMessage:
+			'PackForge imported {instances} instances, {accounts} accounts and all of your settings from your existing Modrinth App installation. Your instance files keep using {directory}, so nothing had to be re-downloaded.',
+	},
 })
 
 function handleAdsConsentRequired(required) {
@@ -759,6 +778,34 @@ function handleAdsConsentRequired(required) {
 	})
 
 	adsConsentPopupId = notification.id
+}
+
+async function showModrinthAppImportNotice() {
+	try {
+		const imported = await getModrinthAppImport()
+		if (!imported || imported.acknowledged) {
+			return
+		}
+
+		addNotification({
+			title: formatMessage(messages.importedFromModrinthAppTitle),
+			text: imported.data_dir
+				? formatMessage(messages.importedFromModrinthAppSharedDirectory, {
+						instances: imported.instances,
+						accounts: imported.minecraft_accounts + imported.modrinth_accounts,
+						directory: imported.data_dir,
+					})
+				: formatMessage(messages.importedFromModrinthAppDescription, {
+						instances: imported.instances,
+						accounts: imported.minecraft_accounts + imported.modrinth_accounts,
+					}),
+			type: 'success',
+		})
+
+		await acknowledgeModrinthAppImport()
+	} catch (error) {
+		console.error('Failed to report the Modrinth App import', error)
+	}
 }
 
 async function setupApp() {
@@ -839,6 +886,8 @@ async function setupApp() {
 	) {
 		showSyncInstancesUpdateNotification()
 	}
+
+	await traceStartupStep('Report Modrinth App import', showModrinthAppImportNotice)
 
 	await traceStartupStep('Register window resize listener', () =>
 		getCurrentWindow().onResized(async () => {
@@ -1816,16 +1865,16 @@ const updatePopupMessages = defineMessages({
 	},
 	meteredBody: {
 		id: 'app.update-popup.body.metered',
-		defaultMessage: `Modrinth App v{version} is available now! Since you're on a metered network, we didn't automatically download it.`,
+		defaultMessage: `PackForge v{version} is available now! Since you're on a metered network, we didn't automatically download it.`,
 	},
 	downloadedBody: {
 		id: 'app.update-popup.body.download-complete',
-		defaultMessage: `Modrinth App v{version} has finished downloading. Reload to update now, or automatically when you close Modrinth App.`,
+		defaultMessage: `PackForge v{version} has finished downloading. Reload to update now, or automatically when you close PackForge.`,
 	},
 	linuxBody: {
 		id: 'app.update-popup.body.linux',
 		defaultMessage:
-			'Modrinth App v{version} is available. Use your package manager to update for the latest features and fixes!',
+			'PackForge v{version} is available. Use your package manager to update for the latest features and fixes!',
 	},
 	reload: {
 		id: 'app.update-popup.reload',
@@ -2373,7 +2422,7 @@ provideAppUpdateDownloadProgress(appUpdateDownload)
 		</div>
 		<div data-tauri-drag-region class="app-grid-statusbar bg-bg-raised h-[--top-bar-height] flex">
 			<div data-tauri-drag-region class="flex min-w-0 flex-1 items-center overflow-hidden p-2">
-				<TextLogo class="h-7 w-auto shrink-0 text-contrast pointer-events-none" />
+				<PackForgeLogo class="text-xl shrink-0 text-contrast pointer-events-none" />
 				<div data-tauri-drag-region class="ml-2 flex shrink-0 items-center gap-2">
 					<IconButton
 						type="outlined"

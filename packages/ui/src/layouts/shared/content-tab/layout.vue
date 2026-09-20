@@ -1216,6 +1216,8 @@ const confirmUnlinkModal = ref<InstanceType<typeof ConfirmUnlinkModal>>()
 							</div>
 
 							<div class="flex shrink-0 items-center gap-2">
+								<slot name="toolbarActions" />
+
 								<Button
 									v-if="hasBulkUpdateSupport && hasOutdatedProjects"
 									v-tooltip="formatMessage(messages.updateAll)"

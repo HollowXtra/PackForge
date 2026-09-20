@@ -4917,7 +4917,7 @@
     "defaultMessage": "新しいサーバー"
   },
   "servers.list-empty.no-servers-description": {
-    "defaultMessage": "Modrinth Appを使えば、MODのインストール、友達の招待、そして一緒にプレイすることなど、すべてが可能です。"
+    "defaultMessage": "PackForgeを使えば、MODのインストール、友達の招待、そして一緒にプレイすることなど、すべてが可能です。"
   },
   "servers.list-empty.one-click-mod-installs-description": {
     "defaultMessage": "お好みのModを選んだら、あとはすべて対応いたします。"
@@ -5328,7 +5328,7 @@
     "defaultMessage": "検索結果"
   },
   "settings.language.coverage.app-tooltip": {
-    "defaultMessage": "Modrinth Appの約{percentage}%がこの言語で利用可能です。"
+    "defaultMessage": "PackForgeの約{percentage}%がこの言語で利用可能です。"
   },
   "settings.language.coverage.label": {
     "defaultMessage": "{percentage}%翻訳済み"

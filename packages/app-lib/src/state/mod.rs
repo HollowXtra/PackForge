@@ -12,6 +12,9 @@ use sqlx::SqlitePool;
 mod dirs;
 pub use self::dirs::*;
 
+pub(crate) mod app_import;
+pub use self::app_import::ModrinthAppImport;
+
 mod instance_types;
 pub use self::instance_types::*;
 
@@ -333,12 +336,41 @@ impl State {
                 })?;
         let store_lock =
             content_store::ContentStore::lock_process(&settings_dir).await?;
-        let pool = db::connect(&app_identifier).await?;
+
+        // Modrinth App keeps its data in a directory of its own, so a fresh
+        // PackForge installation imports it instead of starting empty.
+        let imported =
+            app_import::import_from_modrinth_app(&app_identifier).await?;
+
+        let pool = match db::connect(&app_identifier).await {
+            Ok(pool) => pool,
+            Err(error) if imported.is_some() => {
+                // The imported database could not be opened, for example
+                // because it needs migrations this build does not have.
+                // PackForge still has to start, so it starts without it; the
+                // Modrinth App installation it came from is untouched.
+                tracing::error!(
+                    "Failed to open the imported Modrinth App database: {error}"
+                );
+                app_import::discard_imported_database(&app_identifier).await?;
+                db::connect(&app_identifier).await?
+            }
+            Err(error) => return Err(error),
+        };
 
         legacy_converter::migrate_legacy_data(&pool).await?;
 
         tracing::info!("Fetching app settings");
         let mut settings = Settings::get(&pool).await?;
+
+        if let Some(source) = &imported
+            && app_import::adopt_game_directory(&mut settings, source).await?
+        {
+            tracing::info!(
+                "Using the game directory of the existing Modrinth App installation at {}",
+                source.display()
+            );
+        }
 
         let fetch_semaphore =
             FetchSemaphore(Semaphore::new(settings.max_concurrent_downloads));
@@ -358,6 +390,12 @@ impl State {
 
         let directories =
             DirectoryInfo::init(settings.custom_dir, &app_identifier).await?;
+
+        if let Some(source) = &imported {
+            let shared_dir = (directories.config_dir != settings_dir)
+                .then_some(directories.config_dir.as_path());
+            app_import::record_import(source, shared_dir, &pool).await?;
+        }
         let content_store = content_store::ContentStore::new(
             &directories,
             pool.clone(),

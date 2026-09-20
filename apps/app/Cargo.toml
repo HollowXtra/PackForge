@@ -1,9 +1,9 @@
 [package]
 name = "theseus_gui"
-version = "1.0.0"
+version = "1.1.0"
 edition.workspace = true
-description = "The Modrinth App is a desktop application for managing your Minecraft mods"
-repository = "https://github.com/modrinth/code/apps/app/"
+description = "PackForge is a desktop application for managing your Minecraft mods and modpacks"
+repository = "https://github.com/HollowXtra/PackForge"
 license = "GPL-3.0-only"
 
 [dependencies]
