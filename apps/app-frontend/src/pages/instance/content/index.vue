@@ -83,8 +83,12 @@
 					@version-select="handleVersionSelect"
 					@version-hover="handleVersionHover"
 				/>
-			</template>
-		</ContentPageLayout>
+			</template>			</ContentPageLayout>
+			<ModRecommendations
+				v-if="instance && projects.length > 0"
+				:instance="instance"
+				:installed-project-ids="installedProjectIdsList"
+			/>
 	</ReadyTransition>
 </template>
 
@@ -125,6 +129,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import ExportModal from '@/components/ui/ExportModal.vue'
+import ModRecommendations from '@/components/ui/ModRecommendations.vue'
 import SyncedContentModal from '@/components/ui/instance/SyncedContentModal.vue'
 import ShareModalWrapper from '@/components/ui/modal/ShareModalWrapper.vue'
 import { useManagedContentPolicy } from '@/composables/instances/use-managed-content-policy'
@@ -265,6 +270,11 @@ const contentQuery = useQuery(
 )
 const loading = ref(contentQuery.data.value === undefined)
 const projects = ref<ContentItem[]>([])
+const installedProjectIdsList = computed(() =>
+	projects.value
+		.map((p) => p.project?.id)
+		.filter((id): id is string => !!id),
+)
 
 const installingBuffer = ref<ContentItem[]>([])
 const handledInstallRevision = ref(0)
