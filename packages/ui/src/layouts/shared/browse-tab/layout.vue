@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import type { Labrinth } from '@modrinth/api-client'
-import { RotateCounterClockwiseIcon, SearchIcon } from '@modrinth/assets'
+import { RotateCounterClockwiseIcon } from '@modrinth/assets'
 import { computed, ref, toValue } from 'vue'
 
 import Admonition from '#ui/components/base/Admonition.vue'
 import { Button, IconButton } from '#ui/components/base/buttons'
 import Combobox, { type ComboboxOption } from '#ui/components/base/Combobox.vue'
-import Input from '#ui/components/base/inputs/Input.vue'
 import LoadingIndicator from '#ui/components/base/LoadingIndicator.vue'
 import NavTabs from '#ui/components/base/NavTabs.vue'
 import Pagination from '#ui/components/base/Pagination.vue'
@@ -15,9 +14,10 @@ import ProjectCardList from '#ui/components/project/ProjectCardList.vue'
 import SearchFilterControl from '#ui/components/search/SearchFilterControl.vue'
 import { defineMessages, useVIntl } from '#ui/composables/i18n'
 import { useStickyObserver } from '#ui/composables/sticky-observer'
-import { commonMessages, formatProjectTypeSentence } from '#ui/utils/common-messages'
+import { commonMessages } from '#ui/utils/common-messages'
 import type { SortType } from '#ui/utils/search'
 
+import BrowseSearchInput from './components/BrowseSearchInput.vue'
 import SelectedProjectsFloatingBar from './components/SelectedProjectsFloatingBar.vue'
 import BrowseInstallHeader from './header.vue'
 import { injectBrowseManager } from './providers/browse-manager'
@@ -47,10 +47,6 @@ const maxResultsOptions = computed<ComboboxOption<number>[]>(() =>
 )
 
 const messages = defineMessages({
-	searchPlaceholder: {
-		id: 'browse.search.placeholder',
-		defaultMessage: 'Search {projectType}...',
-	},
 	viewPrefix: {
 		id: 'browse.view-prefix',
 		defaultMessage: 'View:',
@@ -144,21 +140,7 @@ function getProjectCardTags(result: Labrinth.Search.v3.ResultSearchProject, disp
 		:replace="ctx.variant === 'app'"
 	/>
 
-	<Input
-		v-model="ctx.query.value"
-		:icon="SearchIcon"
-		type="text"
-		autocomplete="off"
-		:placeholder="
-			formatMessage(messages.searchPlaceholder, {
-				projectType: formatProjectTypeSentence(formatMessage, ctx.projectType.value, 2),
-			})
-		"
-		clearable
-		wrapper-class="w-full"
-		size="large"
-		@clear="ctx.clearSearch()"
-	/>
+	<BrowseSearchInput />
 
 	<Admonition
 		v-if="ctx.linkOverridesAdvancedPrefs.value"
