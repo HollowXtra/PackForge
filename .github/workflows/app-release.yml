@@ -35,9 +35,9 @@ jobs:
               target/release/bundle/appimage/*.AppImage.tar.gz.sig
               target/release/bundle/deb/*.deb
               target/release/bundle/rpm/*.rpm
-          - runner: macos-latest
-            artifact-target-name: universal-apple-darwin
-            bundles: dmg
+          - runner: macos-latest			artifact-target-name: universal-apple-darwin
+			# `app` is what produces the macOS updater archive; `dmg` is the installer
+			bundles: dmg,app
             target-args: '--target universal-apple-darwin'
             artifact-paths: |
               target/universal-apple-darwin/release/bundle/dmg/*.dmg
