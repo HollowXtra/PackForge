@@ -563,6 +563,36 @@
   "app.hosting.update-required.title": {
     "message": "PackForge update required"
   },
+  "app.install-suggestions.add-button": {
+    "message": "Add"
+  },
+  "app.install-suggestions.added": {
+    "message": "Added"
+  },
+  "app.install-suggestions.adding": {
+    "message": "Adding"
+  },
+  "app.install-suggestions.curseforge-link": {
+    "message": "Search CurseForge"
+  },
+  "app.install-suggestions.empty": {
+    "message": "Found nothing on Modrinth that matches this instance version and loader for that project."
+  },
+  "app.install-suggestions.header": {
+    "message": "Mods that go with {project}?"
+  },
+  "app.install-suggestions.instance-summary": {
+    "message": "For {instance} · {gameVersion} {loader}"
+  },
+  "app.install-suggestions.reason-popular": {
+    "message": "{downloads} downloads · often used in modpacks"
+  },
+  "app.install-suggestions.reason-related": {
+    "message": "Related to {project}"
+  },
+  "app.install-suggestions.source-note": {
+    "message": "From Modrinth search, matched to this instance"
+  },
   "app.install.phase.downloading_content": {
     "message": "Downloading content"
   },

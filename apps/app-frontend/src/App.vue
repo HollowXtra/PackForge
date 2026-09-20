@@ -83,6 +83,7 @@ import FriendsList from '@/components/ui/friends/FriendsList.vue'
 import HostingUpdateRequired from '@/components/ui/HostingUpdateRequired.vue'
 import AddServerToInstanceModal from '@/components/ui/install_flow/AddServerToInstanceModal.vue'
 import UnknownPackWarningModal from '@/components/ui/install_flow/UnknownPackWarningModal.vue'
+import InstallSuggestionsPanel from '@/components/ui/instance/InstallSuggestionsPanel.vue'
 import IconEditorModal from '@/components/ui/instance_settings/icon-editor-modal/index.vue'
 import MinecraftAuthErrorModal from '@/components/ui/minecraft-auth-error-modal/MinecraftAuthErrorModal.vue'
 import MinecraftRequiredModal from '@/components/ui/minecraft-required-modal/MinecraftRequiredModal.vue'
@@ -2052,11 +2053,11 @@ async function checkUpdates() {
 async function checkLinuxUpdates() {
 	try {
 		const [response, currentVersion] = await Promise.all([
-			fetch('https://launcher-files.modrinth.com/updates.json'),
+			fetch('https://api.github.com/repos/HollowXtra/PackForge/releases/latest'),
 			getVersion(),
 		])
-		const updates = await response.json()
-		const latestVersion = updates?.version
+		const release = await response.json()
+		const latestVersion = String(release?.tag_name ?? '').replace(/^v/, '') || null
 
 		if (latestVersion && latestVersion !== currentVersion) {
 			markAppUpdateActionable(latestVersion)
@@ -2617,6 +2618,7 @@ provideAppUpdateDownloadProgress(appUpdateDownload)
 	<I18nDebugPanel />
 	<NotificationPanel :has-sidebar="sidebarVisible" />
 	<PopupNotificationPanel :has-sidebar="sidebarVisible" />
+	<InstallSuggestionsPanel />
 	<ErrorModal ref="errorModal" />
 	<MinecraftAuthErrorModal ref="minecraftAuthErrorModal" />
 	<MinecraftRequiredModal ref="minecraftRequiredModal" />

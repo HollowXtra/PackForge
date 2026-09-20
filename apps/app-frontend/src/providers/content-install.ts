@@ -41,6 +41,7 @@ import {
 import { get_game_versions } from '@/helpers/tags'
 import type { GameInstance, InstanceLoader } from '@/helpers/types'
 import type { AppEvents } from '@/providers/app-events'
+import { noteInstalledProject } from '@/providers/install-suggestions'
 interface ModalRef {
 	show: (initialVersionId?: string) => void
 	hide: () => void
@@ -940,6 +941,15 @@ export function createContentInstall(opts: {
 						source,
 					})
 					callback(version.id, installedProjectIds)
+					noteInstalledProject({
+						projectId: project.id,
+						title: project.title,
+						projectType: project.project_type ?? 'mod',
+						instanceId: instance.id,
+						instanceName: instance.name,
+						gameVersion: instance.game_version,
+						loader: instance.loader,
+					})
 				} catch (err) {
 					removeInstallingItems(instanceId, plannedProjectIds)
 					markInstanceContentInstallFailed(instanceId)

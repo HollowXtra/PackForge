@@ -31,6 +31,8 @@ type AnalyticsEventMap = {
 	}
 	InstanceProjectRemove: InstanceProperties & { id: string; name: string; project_type: string }
 	ProjectInstall: ProjectProperties & { version_id: string; title: string; source: string }
+	InstallSuggestionAccepted: ProjectProperties & { title: string; seed: string }
+	InstallSuggestionCurseForgeSearch: { seed: string }
 	ProjectInstallStart: { source: string }
 	PackInstall: { id: string; version_id: string; title: string; source: string }
 	PackInstallStart: Record<string, never>

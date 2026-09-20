@@ -12,7 +12,7 @@ import {
 	UploadIcon,
 } from '@modrinth/assets'
 import { useMagicKeys } from '@vueuse/core'
-import { computed, getCurrentInstance, ref } from 'vue'
+import { computed, getCurrentInstance, onBeforeUnmount, ref, watch } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 
 import AutoLink from '#ui/components/base/AutoLink.vue'
@@ -163,6 +163,27 @@ const clientWarningMessage = computed(() => {
 
 const { shift: shiftHeld } = useMagicKeys()
 const deleteHovered = ref(false)
+const justInstalled = ref(false)
+let justInstalledTimer: ReturnType<typeof setTimeout> | null = null
+
+// Flash the row when a download finishes so an install is visible even if the
+// user is looking elsewhere on the page
+watch(
+	() => props.installing,
+	(installing, wasInstalling) => {
+		if (!wasInstalling || installing) return
+
+		justInstalled.value = true
+		if (justInstalledTimer) clearTimeout(justInstalledTimer)
+		justInstalledTimer = setTimeout(() => {
+			justInstalled.value = false
+		}, 1600)
+	},
+)
+
+onBeforeUnmount(() => {
+	if (justInstalledTimer) clearTimeout(justInstalledTimer)
+})
 const installTooltip = computed(() => {
 	if (!props.installing) return undefined
 	if (props.installProgress == null) return formatMessage(commonMessages.installingLabel)
@@ -173,14 +194,26 @@ const installTooltip = computed(() => {
 <template>
 	<div
 		role="row"
-		class="flex items-center justify-between"
+		class="relative flex items-center justify-between overflow-hidden rounded-xl transition-all duration-300"
 		:class="{
 			'h-[74px] gap-4 px-3': !inline,
 			'gap-3': inline,
 			'opacity-50 grayscale': disabled && !installing,
-			'opacity-50': installing,
+			'opacity-60': installing,
+			'installing-row': installing,
+			'just-installed': justInstalled,
 		}"
 	>
+		<span
+			v-if="installing"
+			aria-hidden="true"
+			class="installing-shimmer pointer-events-none absolute inset-y-0 -left-1/3 w-1/3"
+		/>
+		<span
+			v-if="justInstalled"
+			aria-hidden="true"
+			class="pointer-events-none absolute inset-0 rounded-xl ring-2 ring-brand"
+		/>
 		<div
 			class="flex min-w-0 items-center gap-4"
 			:class="
@@ -505,3 +538,54 @@ const installTooltip = computed(() => {
 		</div>
 	</div>
 </template>
+
+<style scoped>
+.installing-row {
+	animation: installing-row-pulse 1.8s ease-in-out infinite;
+}
+
+.installing-shimmer {
+	background: linear-gradient(
+		90deg,
+		transparent,
+		color-mix(in srgb, var(--color-brand) 22%, transparent),
+		transparent
+	);
+	animation: installing-shimmer-sweep 1.4s linear infinite;
+}
+
+.just-installed {
+	animation: just-installed-pop 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes installing-row-pulse {
+	0%,
+	100% {
+		background-color: transparent;
+	}
+	50% {
+		background-color: color-mix(in srgb, var(--color-brand) 7%, transparent);
+	}
+}
+
+@keyframes installing-shimmer-sweep {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(400%);
+	}
+}
+
+@keyframes just-installed-pop {
+	0% {
+		transform: scale(1);
+	}
+	35% {
+		transform: scale(1.012);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+</style>

@@ -23,12 +23,16 @@ jobs:
             target-args: ''
             artifact-paths: |
               target/release/bundle/nsis/*.exe
+              target/release/bundle/nsis/*.exe.sig
           - runner: ubuntu-latest
             artifact-target-name: x86_64-unknown-linux-gnu
             bundles: appimage,deb,rpm
             target-args: ''
             artifact-paths: |
               target/release/bundle/appimage/*.AppImage
+              target/release/bundle/appimage/*.AppImage.sig
+              target/release/bundle/appimage/*.AppImage.tar.gz
+              target/release/bundle/appimage/*.AppImage.tar.gz.sig
               target/release/bundle/deb/*.deb
               target/release/bundle/rpm/*.rpm
           - runner: macos-latest
@@ -37,11 +41,16 @@ jobs:
             target-args: '--target universal-apple-darwin'
             artifact-paths: |
               target/universal-apple-darwin/release/bundle/dmg/*.dmg
+              target/universal-apple-darwin/release/bundle/macos/*.app.tar.gz
+              target/universal-apple-darwin/release/bundle/macos/*.app.tar.gz.sig
 
     runs-on: ${{ matrix.runner }}
     env:
       VITE_STRIPE_PUBLISHABLE_KEY: pk_live_51JbFxJJygY5LJFfKLVVldb10HlLt24p421OWRsTOWc5sXYFOnFUXWieSc6HD3PHo25ktx8db1WcHr36XGFvZFVUz00V9ixrCs5
       TAURI_BUNDLER_DMG_IGNORE_CI: 'true'
+      # Signs the bundles so an installed PackForge can verify and apply updates
+      TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+      TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
 
     steps:
       - name: Check out code
@@ -81,7 +90,7 @@ jobs:
 
       - name: Build app
         shell: bash
-        run: pnpm --filter=@modrinth/app run tauri build ${{ matrix.target-args }} --bundles "${{ matrix.bundles }}"
+        run: pnpm --filter=@modrinth/app run tauri build ${{ matrix.target-args }} --config tauri.packforge-release.conf.json --bundles "${{ matrix.bundles }}"
 
       - name: Upload app bundles
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -110,14 +119,51 @@ jobs:
           path: bundles
           merge-multiple: true
 
+      - name: Build update manifest
+        run: |
+          set -euo pipefail
+          tag="$GITHUB_REF_NAME"
+          version="${tag#v}"
+          base="https://github.com/$GITHUB_REPOSITORY/releases/download/$tag"
+
+          manifest=$(jq -n \
+            --arg version "$version" \
+            --arg pub_date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            '{version: $version, notes: "", pub_date: $pub_date, platforms: {}}')
+
+          add_platform() {
+            local key="$1" archive="$2"
+            if [ -z "$archive" ] || [ ! -f "$archive.sig" ]; then
+              echo "::warning::No signed updater artifact for $key"
+              return 0
+            fi
+            manifest=$(jq \
+              --arg key "$key" \
+              --arg url "$base/$(basename "$archive")" \
+              --arg sig "$(cat "$archive.sig")" \
+              '.platforms[$key] = {signature: $sig, url: $url}' <<<"$manifest")
+          }
+
+          # macOS is a universal build, so both architectures share one archive
+          mac_archive=$(find bundles -name '*.app.tar.gz' | head -1)
+
+          add_platform windows-x86_64 "$(find bundles -name '*.exe' | head -1)"
+          add_platform linux-x86_64 "$(find bundles -name '*.AppImage.tar.gz' | head -1)"
+          add_platform darwin-aarch64 "$mac_archive"
+          add_platform darwin-x86_64 "$mac_archive"
+
+          printf '%s\n' "$manifest" > latest.json
+          jq . latest.json
+
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           tag="$GITHUB_REF_NAME"
-          mapfile -t files < <(find bundles -type f \( -name '*.exe' -o -name '*.dmg' -o -name '*.AppImage' -o -name '*.deb' -o -name '*.rpm' \) | sort)
+          mapfile -t files < <(find bundles -type f \( -name '*.exe' -o -name '*.dmg' -o -name '*.AppImage' -o -name '*.AppImage.tar.gz' -o -name '*.app.tar.gz' -o -name '*.deb' -o -name '*.rpm' \) | sort)
+          files+=(latest.json)
 
-          if [ ${#files[@]} -eq 0 ]; then
+          if [ ${#files[@]} -le 1 ]; then
             echo "::error::No installer artifacts were found to release"
             exit 1
           fi
