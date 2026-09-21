@@ -30,8 +30,8 @@
 	},
 	"plugins": {
 		"updater": {
-			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDIwMzM5QkE0M0FCOERBMzkKUldRNTJyZzZwSnN6SUdPRGdZREtUUGxMblZqeG9OVHYxRUlRTzJBc2U3MUNJaDMvZDQ1UytZZmYK",
-			"endpoints": ["https://launcher-files.modrinth.com/updates.json"],
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFDNDVDN0Y4OEFBRjFEQUUKUldTdUhhK0srTWRGSENQcnZtUnhxblNDdVBISHZRaTlVVk0wTG1XV0pPaWkrUkxMN2lsRmc4VHcK",
+			"endpoints": ["https://github.com/HollowXtra/PackForge/releases/latest/download/latest.json"],
 			"windows": {
 				"installMode": "quiet"
 			}

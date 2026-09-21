@@ -1,5 +1,7 @@
 //! API for interacting with Theseus
 pub mod cache;
+pub mod curseforge;
+pub mod curseforge_settings;
 pub mod friends;
 pub mod handler;
 pub mod instance;
